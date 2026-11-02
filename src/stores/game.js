@@ -1,0 +1,195 @@
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia'
+import { useRouter } from 'vue-router'
+import { getAccuracy, getPoints } from '@/utils/scoring'
+
+
+const questions = [
+  {
+    level: 1,
+    question: 'Space starts at 100 km. One person is 1.45 m tall up to the shoulders. How many people on each other\'s shoulders do you need to reach space?',
+    unit: 'people',
+    answer: 68966,
+    hint: '100 km in metres, divided by 1.45',
+    fact: 'That is about the number of people in a big football stadium.',
+    source: 'Kármán line (100 km) according to the FAI'
+  },
+  {
+    level: 1,
+    question: 'Mount Everest is 8,849 m high. A sheet of A4 paper is 0.1 mm thick. How many sheets do you need to stack to reach the top?',
+    unit: 'sheets',
+    answer: 88490000,
+    hint: '8,849 m in millimetres, divided by 0.1',
+    fact: 'That is about 177,000 packs of 500 sheets.',
+    source: 'Height according to National Geographic (2020 measurement)'
+  },
+  {
+    level: 1,
+    question: 'The Moon is 384,400 km away. You drive there at 100 km/h without stopping. How many days does it take?',
+    unit: 'days',
+    answer: 160,
+    hint: 'Distance divided by speed gives hours. Then divide by 24.',
+    fact: 'Light does the same trip in 1.3 seconds.',
+    source: 'Distance according to NASA'
+  },
+  {
+    level: 1,
+    question: 'The Eiffel Tower is 330 m high. A LEGO brick is 9.6 mm high (without the studs). How many bricks do you need to stack to reach the top?',
+    unit: 'bricks',
+    answer: 34375,
+    hint: '330 m in millimetres, divided by 9.6',
+    fact: 'The Eiffel Tower grows about 15 cm in summer because the iron expands in the heat.',
+    source: 'Height according to the Eiffel Tower operator, brick size according to LEGO'
+  },
+  {
+    level: 1,
+    question: 'Your heart beats about 70 times per minute. How many times does it beat in one day?',
+    unit: 'beats',
+    answer: 100800,
+    hint: '70 × 60 minutes × 24 hours',
+    fact: 'In a life of 80 years that adds up to about 3 billion beats.',
+    source: 'Own calculation'
+  },
+  {
+    level: 2,
+    question: 'The ISS flies at 408 km high. You stack people to reach it: 1.45 m per person, 70 kg per person. How many tonnes does the whole tower of people weigh?',
+    unit: 'tonnes',
+    answer: 19697,
+    hint: 'First the number of people (408 km / 1.45 m), then × 70 kg, then / 1000 for tonnes.',
+    fact: 'That is about as heavy as 2 Eiffel Towers.',
+    source: 'ISS height according to NASA'
+  },
+  {
+    level: 2,
+    question: 'How many years is one billion seconds? Use 365 days per year.',
+    unit: 'years',
+    answer: 31.7,
+    hint: '1,000,000,000 / 60 / 60 / 24 / 365',
+    fact: 'One million seconds is only 11.5 days.',
+    source: 'Own calculation'
+  },
+  {
+    level: 2,
+    question: 'The Earth is 40,075 km around. You walk 5 km/h for 8 hours a day. How many days does it take to walk around the Earth?',
+    unit: 'days',
+    answer: 1002,
+    hint: 'First km per day (5 × 8), then 40,075 divided by that.',
+    fact: 'That is almost 3 years of walking, without oceans in the way.',
+    source: 'Circumference at the equator according to NASA'
+  },
+  {
+    level: 2,
+    question: 'A leaking tap drips 1 drop per second. One drop is 0.05 ml. How many litres does it leak in one year?',
+    unit: 'litres',
+    answer: 1577,
+    hint: '0.05 ml × seconds in a year (60 × 60 × 24 × 365), then / 1000 for litres.',
+    fact: 'That is about 10 full bathtubs.',
+    source: 'Own calculation'
+  },
+  {
+    level: 2,
+    question: 'The Netherlands is 41,543 km² (land and water). A football pitch is 105 by 68 m. How many football pitches fit in the Netherlands?',
+    unit: 'pitches',
+    answer: 5818347,
+    hint: 'One pitch in m² (105 × 68). 1 km² is 1,000,000 m².',
+    fact: 'About 1 in 5 of those pitches would be water.',
+    source: 'Area according to CBS'
+  },
+  {
+    level: 3,
+    question: 'The Sun is 1,392,700 km wide, the Earth 12,742 km. How many Earths fit inside the Sun?',
+    unit: 'Earths',
+    answer: 1305750,
+    hint: 'How many times wider is the Sun? Volume grows with the width to the power of 3.',
+    fact: 'The Sun holds 99.8% of all the mass in our solar system.',
+    source: 'Sizes according to NASA'
+  },
+  {
+    level: 3,
+    question: 'The Sun is 149.6 million km away. Light travels 299,792 km per second. How many seconds does sunlight need to reach us?',
+    unit: 'seconds',
+    answer: 499,
+    hint: '149,600,000 divided by 299,792',
+    fact: 'So you always see the Sun as it was more than 8 minutes ago.',
+    source: 'NASA and NIST'
+  },
+  {
+    level: 3,
+    question: 'There are 8.2 billion people. Stack all of them on each other\'s shoulders (1.45 m per person). How many times does the tower reach the Moon (384,400 km)?',
+    unit: 'times',
+    answer: 30.9,
+    hint: '8.2 billion × 1.45 m, in km, divided by 384,400',
+    fact: 'Almost 31 times: humanity could build a ladder to the Moon and back 15 times.',
+    source: 'Population according to the United Nations (2025), distance according to NASA'
+  },
+  {
+    level: 3,
+    question: 'All 8.2 billion people stand in one line, 0.5 m each. How many times does the line go around the Earth (40,075 km)?',
+    unit: 'times',
+    answer: 102.3,
+    hint: '8.2 billion × 0.5 m, in km, divided by 40,075',
+    fact: 'About 102 times. The Netherlands alone would reach about 9,000 km.',
+    source: 'Population according to the United Nations (2025)'
+  },
+  {
+    level: 3,
+    question: 'Mars is on average 225 million km away. You drive there at 100 km/h without stopping. How many years does it take?',
+    unit: 'years',
+    answer: 256.8,
+    hint: 'Distance / speed gives hours. Then / 24 / 365.',
+    fact: 'A spacecraft does it in about 7 months.',
+    source: 'Average distance according to NASA'
+  }
+]
+
+
+export const useGameStore = defineStore('game', () => {
+  const router = useRouter()
+  const level = ref(1)
+  const levelQuestions = computed(() => questions.filter(q => q.level === level.value))
+  const index = ref(0);
+  const currentQuestion = computed(() => levelQuestions.value[index.value])
+  const isLastQuestion = computed(() => index.value === levelQuestions.value.length - 1)
+  const score = ref(0);
+  const streak = ref(0);
+  const started = ref(false)
+  function startLevel(n)
+  {
+    level.value = n;
+    index.value = 0;
+    score.value = 0;
+    streak.value = 0;
+    started.value = true;
+  }
+
+  function reset() {
+    started.value = false
+    level.value = 1
+    index.value = 0
+    score.value = 0
+    streak.value = 0
+  }
+  function buttonQuestion()
+  {
+    if(isLastQuestion.value === false) {
+      index.value++
+    } else {
+      router.push('/results')
+    }
+  }
+  function submitAnswer(answer)
+  {
+    const accuracy = getAccuracy(currentQuestion.value.answer,Number(answer))
+    score.value += getPoints(accuracy)
+
+    if (accuracy > 90)
+    {
+      streak.value += 1
+    } else {
+      streak.value = 0
+    }
+    
+  }
+
+  return { started, reset, startLevel, level, index, score, streak, levelQuestions, currentQuestion, buttonQuestion, isLastQuestion, submitAnswer }
+})

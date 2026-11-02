@@ -2,11 +2,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import QuizView from '@/views/QuizView.vue'
 import ResultsView from '@/views/ResultsView.vue'
-import { useQuizStore } from '@/stores/Quiz'
+import { useGameStore } from '@/stores/game'
 
 const routes = [
     { path: '/', name: 'home', component: HomeView },
-    { path: '/spel/:niveau', name: 'quiz', component: QuizView },
+    { path: '/spel/:niveau', name: 'game', component: QuizView },
     { path: '/results', name: 'results', component: ResultsView }
 ]
 
@@ -17,14 +17,14 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  const quiz = useQuizStore()
+  const game = useGameStore()
 
-  if ((to.name === 'quiz' || to.name === 'results') && !quiz.started) {
+  if ((to.name === 'game' || to.name === 'results') && !game.started) {
     return '/'
   }
 
   const possible = ['1', '2', '3']
-  if (to.name === 'quiz' && !possible.includes(to.params.niveau)) {
+  if (to.name === 'game' && !possible.includes(to.params.niveau)) {
     return '/'
   }
 })

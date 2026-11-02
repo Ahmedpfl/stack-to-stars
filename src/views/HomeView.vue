@@ -1,14 +1,14 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { useQuizStore } from '@/stores/Quiz'
+import { useGameStore } from '@/stores/game'
 import { ref, watch } from 'vue'
 
 const router = useRouter()
-const quiz = useQuizStore()
+const game = useGameStore()
 const level = ref(1)
 
-function startQuiz(niveau) {
-  quiz.start()
+function startGame(niveau) {
+  game.startLevel(niveau)
   router.push(`/spel/${niveau}`)
 }
 
@@ -28,7 +28,7 @@ watch(level, function(current) {
           lvl {{ level }}
         </button>
         <button class="cursor-pointer rounded-r-lg bg-emerald-500 px-6 py-2 text-lg font-semibold text-white transition hover:bg-emerald-600 hover:scale-105"
-          @click="startQuiz(level)">
+          @click="startGame(level)">
           Press to start
         </button>
       </div>
