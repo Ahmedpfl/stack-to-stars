@@ -1,7 +1,7 @@
 export function getAccuracy(correct, guess) {
   const difference = Math.abs(correct - guess)
   const percentOff = (difference / correct) * 100
-  return Math.round(100 - percentOff)
+  return Math.max(0, Math.round(100 - percentOff))
 }
 
 export function getPoints(accuracy) {
