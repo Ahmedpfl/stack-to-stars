@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import { useRouter } from 'vue-router'
-import { getAccuracy, getPoints } from '@/utils/scoring'
+import { getAccuracy, getPoints, getStreakBonus } from '@/utils/scoring'
 import questions from '@/data/questions.json'
 
 export const useGameStore = defineStore('game', () => {
@@ -14,6 +14,7 @@ export const useGameStore = defineStore('game', () => {
   const hintUsed = ref(false)
   const score = ref(0)
   const streak = ref(0)
+  const streakBonus = ref(0)
   const started = ref(false)
   const lastResult = ref(null)
   function startLevel(n) {
@@ -23,6 +24,7 @@ export const useGameStore = defineStore('game', () => {
     index.value = 0
     score.value = 0
     streak.value = 0
+    streakBonus.value = 0
     started.value = true
   }
 
@@ -34,6 +36,7 @@ export const useGameStore = defineStore('game', () => {
     index.value = 0
     score.value = 0
     streak.value = 0
+    streakBonus.value = 0
   }
   function buttonQuestion() {
     if (isLastQuestion.value === false) {
@@ -47,15 +50,21 @@ export const useGameStore = defineStore('game', () => {
     const points = getPoints(accuracy)
     score.value += points
 
-    if (accuracy > 90) {
+    if (accuracy >= 90) {
       streak.value += 1
     } else {
       streak.value = 0
     }
+
+    const bonus = getStreakBonus(streak.value)
+    score.value += bonus
+    streakBonus.value += bonus
+
     lastResult.value = {
       guess: Number(answer),
       accuracy: accuracy,
-      points: points
+      points: points,
+      bonus: bonus
     }
   }
 
@@ -74,6 +83,7 @@ export const useGameStore = defineStore('game', () => {
     index,
     score,
     streak,
+    streakBonus,
     levelQuestions,
     currentQuestion,
     buttonQuestion,

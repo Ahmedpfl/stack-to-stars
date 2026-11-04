@@ -30,6 +30,9 @@ const emit = defineEmits(['next'])
     <p class="mt-2 text-white/70">
       Points: {{ result.points }}
     </p>
+    <p v-if="result.bonus > 0" class="mt-2 font-semibold text-yellow-300">
+      Streak bonus: +{{ result.bonus }}
+    </p>
     <p class="mt-4 italic">
       {{ question.fact }}
     </p>
