@@ -1,11 +1,14 @@
 <script setup>
+import { ref } from 'vue';
 import { useGameStore } from '@/stores/game';
 import QuestionCard from '@/components/QuestionCard.vue';
 import ButtonCard from '@/components/ButtonCard.vue';
 import AnswerCard from '@/components/AnswerCard.vue';
 import ProgressDots from '@/components/ProgressDots.vue';
+import CalculatorCard from '@/components/CalculatorCard.vue';
 
 const game = useGameStore()
+const showCalculator = ref(false)
 
 function next(answer) {
   game.submitAnswer(answer)
@@ -16,6 +19,7 @@ function continueGame() {
   game.hintUsed = false
   game.buttonQuestion()
 }
+
 </script>
 
 <template>
@@ -34,7 +38,7 @@ function continueGame() {
       </template>
       <template v-else>
         <QuestionCard v-if="game.currentQuestion" :question="game.currentQuestion" />
-        <ButtonCard @hint="game.hintButton()" @answer="next" />
+        <ButtonCard @hint="game.hintButton()" @answer="next" @calculator="showCalculator = !showCalculator" />
       </template>
     </div>
     <div class="rounded-b-xl bg-white/10 p-2 shadow-xl backdrop-blur-sm" v-if="game.hintUsed && !game.lastResult">
@@ -42,6 +46,7 @@ function continueGame() {
         {{ game.currentQuestion.hint }}
       </h1>
     </div>
+  <CalculatorCard v-if="showCalculator" @close="showCalculator = false" />
   </div>
 </template>
 
