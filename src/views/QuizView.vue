@@ -36,10 +36,10 @@ function continueGame() {
       </div>
       <Transition name="fade" mode="out-in">
         <div v-if="game.lastResult" key="answer">
-          <AnswerCard :question="game.currentQuestion" :result="game.lastResult" @next="continueGame" />
+          <AnswerCard :question="game.currentQuestion" :result="game.lastResult" :is-last="game.isLastQuestion" @next="continueGame" />
         </div>
         <div v-else key="question">
-          <TimerBar v-if="game.level === 3" :key="game.index" @timeup="next(0)" />
+          <TimerBar v-if="game.level === 3" :key="game.index" @timeup="next(null)" />
           <QuestionCard v-if="game.currentQuestion" :question="game.currentQuestion" />
           <ButtonCard @hint="game.hintButton()" @answer="next" @calculator="showCalculator = !showCalculator" />
         </div>

@@ -65,10 +65,11 @@ export const useGameStore = defineStore('game', () => {
     streakBonus.value += bonus
 
     lastResult.value = {
-      guess: Number(answer),
+      guess: answer === null ? null : Number(answer),
       accuracy: accuracy,
       points: points,
-      bonus: bonus
+      bonus: bonus,
+      hint: hintUsed.value
     }
   }
 
