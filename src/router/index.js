@@ -19,6 +19,10 @@ const router = createRouter({
 router.beforeEach((to) => {
   const game = useGameStore()
 
+  if (to.name === 'game' && game.finished) {
+    return '/results'
+  }
+
   if ((to.name === 'game' || to.name === 'results') && !game.started) {
     return '/'
   }

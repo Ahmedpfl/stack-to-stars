@@ -6,6 +6,7 @@ import ButtonCard from '@/components/ButtonCard.vue';
 import AnswerCard from '@/components/AnswerCard.vue';
 import ProgressDots from '@/components/ProgressDots.vue';
 import CalculatorCard from '@/components/CalculatorCard.vue';
+import TimerBar from '@/components/TimerBar.vue';
 
 const game = useGameStore()
 const showCalculator = ref(false)
@@ -33,13 +34,16 @@ function continueGame() {
           <span v-if="game.streakBonus > 0" class="text-white/70">(+{{ game.streakBonus }} bonus)</span>
         </p>
       </div>
-      <template v-if="game.lastResult">
-        <AnswerCard :question="game.currentQuestion" :result="game.lastResult" @next="continueGame" />
-      </template>
-      <template v-else>
-        <QuestionCard v-if="game.currentQuestion" :question="game.currentQuestion" />
-        <ButtonCard @hint="game.hintButton()" @answer="next" @calculator="showCalculator = !showCalculator" />
-      </template>
+      <Transition name="fade" mode="out-in">
+        <div v-if="game.lastResult" key="answer">
+          <AnswerCard :question="game.currentQuestion" :result="game.lastResult" @next="continueGame" />
+        </div>
+        <div v-else key="question">
+          <TimerBar v-if="game.level === 3" :key="game.index" @timeup="next(0)" />
+          <QuestionCard v-if="game.currentQuestion" :question="game.currentQuestion" />
+          <ButtonCard @hint="game.hintButton()" @answer="next" @calculator="showCalculator = !showCalculator" />
+        </div>
+      </Transition>
     </div>
     <div class="rounded-b-xl bg-white/10 p-2 shadow-xl backdrop-blur-sm" v-if="game.hintUsed && !game.lastResult">
       <h1 class="text-center text-xl font-bold text-white">
@@ -50,4 +54,14 @@ function continueGame() {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

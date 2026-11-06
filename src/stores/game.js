@@ -16,9 +16,11 @@ export const useGameStore = defineStore('game', () => {
   const streak = ref(0)
   const streakBonus = ref(0)
   const started = ref(false)
+  const finished = ref(false)
   const lastResult = ref(null)
   function startLevel(n) {
     hintUsed.value = false
+    finished.value = false
     lastResult.value = null
     level.value = n
     index.value = 0
@@ -30,6 +32,7 @@ export const useGameStore = defineStore('game', () => {
 
   function reset() {
     started.value = false
+    finished.value = false
     hintUsed.value = false
     lastResult.value = null
     level.value = 1
@@ -42,6 +45,7 @@ export const useGameStore = defineStore('game', () => {
     if (isLastQuestion.value === false) {
       index.value++
     } else {
+      finished.value = true
       router.push('/results')
     }
   }
@@ -77,6 +81,7 @@ export const useGameStore = defineStore('game', () => {
 
   return {
     started,
+    finished,
     reset,
     startLevel,
     level,
