@@ -13,9 +13,9 @@ function submit() {
 </script>
 
 <template>
-    <div class="flex flex-row">
+    <div class="grid grid-cols-3 gap-2 sm:flex sm:gap-0">
         <button @click="emit('calculator')"
-            class="flex cursor-pointer items-center pl-3 pr-1 rounded-l-lg bg-emerald-500 text-lg font-semibold text-white transition hover:bg-emerald-600">
+            class="flex cursor-pointer items-center justify-center rounded-lg bg-emerald-500 py-2 text-lg font-semibold text-white transition hover:bg-emerald-600 sm:rounded-none sm:rounded-l-lg sm:pl-3 sm:pr-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -23,11 +23,11 @@ function submit() {
             </svg>
         </button>
         <button @click="emit('hint')"
-            class="cursor-pointer bg-emerald-500 px-6 py-2 text-lg font-semibold text-white transition hover:bg-emerald-600">Hint</button>
+            class="cursor-pointer rounded-lg bg-emerald-500 px-3 py-2 text-base font-semibold text-white transition hover:bg-emerald-600 sm:rounded-none sm:px-6 sm:text-lg">Hint</button>
         <input v-model.number="answer" @keyup.enter="submit"
-            class="w-full border  bg-emerald-500 px-4 py-2 text-white placeholder-white/50 outline-none transition border-emerald-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400"
+            class="order-first col-span-3 w-full min-w-0 rounded-lg border bg-emerald-500 px-3 py-3 text-lg sm:order-none sm:flex-1 sm:rounded-none sm:py-2 text-white placeholder-white/50 outline-none transition border-emerald-500 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400 sm:px-4 sm:text-lg"
             type="number" placeholder="Your answer...">
         <button @click="submit"
-            class="cursor-pointer rounded-r-lg bg-emerald-500 px-6 py-2 text-lg font-semibold text-white transition hover:bg-emerald-600">Next</button>
+            class="cursor-pointer rounded-lg bg-emerald-500 px-3 py-2 text-base font-semibold text-white transition hover:bg-emerald-600 sm:rounded-none sm:rounded-r-lg sm:px-6 sm:text-lg">Next</button>
     </div>
 </template>

@@ -25,7 +25,7 @@ function continueGame() {
 
 <template>
   <div class="flex min-h-dvh w-full flex-col items-center justify-center bg-green-600 p-4">
-    <div class="rounded-xl bg-white/10 p-8 shadow-xl backdrop-blur-sm ring-1 ring-white/20">
+    <div class="w-full max-w-2xl rounded-xl bg-white/10 p-4 shadow-xl backdrop-blur-sm ring-1 ring-white/20 sm:p-8">
       <ProgressDots :current="game.index + 1" :total="game.levelQuestions.length" />
       <div class="flex justify-between text-white mb-2">
         <p>Score: {{ game.score }}</p>
